@@ -1,0 +1,15 @@
+Sección 1
+-Se instala xampp
+-Se instala el composer para laravel
+-Se crea un nuevo proyecto mediante comando por consola
+
+Sección 2
+-Rutas, vistas y controladores como se relacionan
+-Generando un sistema de autentificación y registro de usuarios mediante migración
+-Uso de git y github
+
+Sección 2
+-Integrando assets
+-Sistema de plantillas blade para las diferentes páginas que las usen o no en común
+-Integrando una plantilla al proyecto
+-El token CSRF en los formularios
