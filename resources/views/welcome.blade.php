@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Bienvenido a App Shop')
+@section('title', 'Bienvenido a ' . config('app.name'))
 
 @section('body-class', 'landing-page')
 
@@ -10,7 +10,7 @@
       margin-bottom: 5em;
     }
 
-    .row {
+    .team .row {
       display: -webkit-box;
       display: -webkit-flex;
       display: -ms-flexbox;
@@ -18,7 +18,7 @@
       flex-wrap: wrap;
     }
 
-    .row->[class*='col-'] {
+    .team .row->[class*='col-'] {
       display: flex;
       flex-direction: column;
     }
@@ -31,7 +31,7 @@
   <div class="container">
     <div class="row">
       <div class="col-md-6">
-        <h1 class="title">Bienvenido a App Shop.</h1>
+        <h1 class="title">Bienvenido a {{ config('app.name') }}.</h1>
         <h4>Realiza pedidos en línea y te contactaremos para coordinar la entrega.</h4>
         <br />
         <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="btn btn-danger btn-raised btn-lg">
@@ -86,26 +86,29 @@
     </div>
 
     <div class="section text-center">
-      <h2 class="title">Productos disponibles</h2>
+      <h2 class="title">Nuestras categorías</h2>
+
+      <form class="form-inline" action="{{ url('/search') }}" method="get">
+        <input type="text" name="query" placeholder="Busca un producto" class="form-control" id="search">
+        <button type="submit" class="btn btn-primary btn-just-icon">
+          <i class="material-icons">search</i>
+        </button>
+      </form>
 
       <div class="team">
         <div class="row">
-          @foreach ($products as $product)
+          @foreach ($categories as $category)
           <div class="col-md-4">
             <div class="team-player">
-              <img src="{{ $product->featured_image_url }}" alt="Thumbnail Image" class="img-raised img-circle">
+              <img src="{{ $category->featured_image_url }}" alt="Imagen de la categoría {{ $category->name }}" class="img-raised img-circle">
               <h4 class="title">
-                <a href="{{ url('/products/'.$product->id) }}">{{ $product->name }}</a>
+                <a href="{{ url('/categories/'.$category->id) }}">{{ $category->name }}</a>
                 <br />
-                <small class="text-muted">{{ $product->category->name }}</small>
               </h4>
-              <p class="description">{{ $product->description }}</p>
+              <p class="description">{{ $category->description }}</p>
             </div>
           </div>
           @endforeach
-          <div class="text-center">
-            {{ $products->links() }}
-          </div>
         </div>
       </div>
 
@@ -155,4 +158,29 @@
 </div>
 
 @include('includes.footer')
+@endsection
+
+@section('scripts')
+  <script src="{{ asset('/js/typeahead.bundle.min.js') }}"></script>
+  <script>
+      $(function() {
+        // constructs the suggestion engine
+        var products = new Bloodhound({
+          datumTokenizer: Bloodhound.tokenizers.whitespace,
+          queryTokenizer: Bloodhound.tokenizers.whitespace,
+          //
+          prefetch: '{{ url("/products/json") }}'
+        });
+
+        //inicializar typeahead sobre nuestro input de búsqueda
+        $('#search').typeahead({
+          hint: true,
+          highlight: true,
+          minLength: 1
+        }, {
+          name: 'products',
+          source: products
+        });
+      });
+  </script>
 @endsection

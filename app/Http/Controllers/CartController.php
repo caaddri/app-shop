@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use App\User;
+use App\Mail\NewOrder;
+use Mail;
 
 class CartController extends Controller
 {
@@ -11,7 +15,12 @@ class CartController extends Controller
     {
       $cart = auth()->user()->cart;
       $cart->status = 'Pending';
+      $cart->order_date = Carbon::now();
       $cart->save(); //update
+
+      $client = auth()->user();
+      $admins = User::where('admin', true)->get();
+      Mail::to($admins)->send(new NewOrder($client, $cart));
 
       $notification = 'Tu pedido se ha registrado correctamente. Te contactaremos pronto vía email.';
       return back()->with(compact('notification'));
